@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+{% load static %}
+{% load blog_tags %}
+
+<html>
+<head>
+    <title>光影详情页</title>
+
+    <!-- meta -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- css -->
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/pace.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/highlights/github.css' %}">
+
+    <!-- js -->
+    <script src="{% static 'blog/js/jquery-2.1.3.min.js' %}"></script>
+    <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'blog/js/pace.min.js' %}"></script>
+    <script src="{% static 'blog/js/modernizr.custom.js' %}"></script>
+</head>
+
+<body>
+<div class="container">
+    <header id="site-header">
+        <div class="row">
+            <div class="col-md-4 col-sm-5 col-xs-8">
+                <div class="logo">
+                    <h1><h1><a href="{% url 'blog:index' %}"><b>Flxj</b></a></h1></h1>
+                </div>
+            </div><!-- col-md-4 -->
+            <div class="col-md-8 col-sm-7 col-xs-4">
+                <nav class="main-nav" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" id="trigger-overlay" class="navbar-toggle">
+                            <span class="ion-navicon"></span>
+                        </button>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="cl-effect-11"><a href="{% url 'blog:index' %}" data-hover="首页">首页</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:book' %}" data-hover="读书">读书</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:film' %}" data-hover="光影">光影</a></li>
+                            <li class="cl-effect-11"><a href="other.html" data-hover="其他">其他</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:about' %}" data-hover="关于">关于</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>
+                <div id="header-search-box">
+                    <a id="search-menu" href="#"><span id="search-icon" class="ion-ios-search-strong"></span></a>
+                    <div id="search-form" class="search-form">
+                        <form role="search" method="get" id="searchform" action="{% url 'haystack_search' %}">
+                            <input type="search" name="q" placeholder="搜索" required>
+                            <button type="submit"><span class="ion-ios-search-strong"></span></button>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- col-md-8 -->
+        </div>
+    </header>
+</div>
+
+<div class="content-body">
+    <div class="container">
+        <div class="row">
+            <main class="col-md-8">
+     {% block main %}
+    <article class="post post-{{ film.pk }}">
+        <header class="entry-header">
+            <h2 class="entry-title">{{ film.name }}</h2>
+             <div class="entry-meta">
+                 <img src="{{ MEDIA_URL }}{{ film.picture }}" style="width: 135px;max-height: 200px;">
+            </div>
+            <div class="entry-meta">
+                <span class="film-director"><a href="#">|导演：{{film.director}}</a></span>
+                <span class="release-date"><a href="#">|上映时间:{{ film.release_data }}</a></span>
+                <span class="release-date"><a href="{{film.douban_url}}" target="_blank">|豆瓣电影链接</a></span>
+            </div>
+            <div class="entry-meta">
+                <span class="read-date"><a href="#">|观看时间:{{ film.watch_time | date:"Y-m" }}</a></span>
+                <span class="review-date"><a href="#">|影评时间:{{ film.created_time | date:"Y-m-d" }}</a></span>
+            </div>
+        </header>
+
+        <!--摘要-->
+        <div class="entry-content clearfix">
+                  {{ film.excerpt}}
+        </div>
+        <!--影评-->
+        <div class="entry-content clearfix">
+            {{ film.review|safe }}
+        </div>
+    </article>
+      <section class="comment-area" id="comment-area">
+        <hr>
+        <h3>发表评论</h3>
+        <form action="{% url 'comments:film_comment' film.pk %}" method="post" class="comment-form">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="{{ form.name.id_for_label }}">名字：</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.email.id_for_label }}">邮箱：</label>
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+                <div class="col-md-4">
+                    <label for="{{ form.url.id_for_label }}">URL：</label>
+                    {{ form.url }}
+                    {{ form.url.errors }}
+                </div>
+                <div class="col-md-12">
+                    <label for="{{ form.text.id_for_label }}">评论：</label>
+                    {{ form.text }}
+                    {{ form.text.errors }}
+                    <button type="submit" class="comment-btn">发表</button>
+                </div>
+            </div>
+        </form>
+        <div class="comment-list-panel">
+
+            <h3>评论列表，共 <span>{{ film.moviecomment_set.count }}</span> 条评论</h3>
+
+            <ul class="comment-list list-unstyled">
+                {% for comment in comment_list %}
+                    <li class="comment-item">
+                        <span class="nickname">{{ comment.name }}</span>
+                        <time class="submit-date"
+                              datetime="{{ comment.created_time }}">{{ comment.created_time }}</time>
+                        <div class="text">
+                            {{ comment.text }}
+                        </div>
+                    </li>
+                {% empty %}
+                    暂无评论
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+    {% endblock main %}
+
+     </main>
+        <aside class="col-md-4">
+                {% block toc %}
+                {% endblock toc %}
+                <div class="widget widget-recent-posts">
+                    <h3 class="widget-title">最近观影</h3>
+                    {% get_recent_films as recent_film_list %}
+                    <ul>
+                        {% for film in recent_film_list %}
+                            <li>
+                                <a href="{{ film.get_absolute_url }}">{{ film.name }}</a>
+                            </li>
+                        {% empty %}
+                            最近很懒！
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="widget widget-archives">
+                    <h3 class="widget-title">归档</h3>
+                    {% film_archives as date_list %}
+                    <ul>
+                        {% for date in date_list %}
+                            <li>
+                                <a href="{% url 'blog:film' date.year date.month %}">
+                                {{ date.year }} 年 {{ date.month }} 月
+                                </a>
+                            </li>
+                        {% empty %}
+                            暂无归档！
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+<footer id="site-footer">
+
+</footer>
+
+<!-- Mobile Menu -->
+<div class="overlay overlay-hugeinc">
+    <button type="button" class="overlay-close"><span class="ion-ios-close-empty"></span></button>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="full-width.html">读书</a></li>
+            <li><a href="about.html">关于</a></li>
+            <li><a href="contact.html">联系</a></li>
+        </ul>
+    </nav>
+</div>
+
+<script src="{% static 'blog/js/script.js' %}"></script>
+
+</body>
+</html>

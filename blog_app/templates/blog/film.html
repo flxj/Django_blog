@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+{% load static %}
+{% load blog_tags %}
+<html>
+<head>
+    <title>光影首页</title>
+
+    <!-- meta -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- css -->
+    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/pace.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/highlights/github.css' %}">
+
+    <!-- js -->
+    <script src="{% static 'blog/js/jquery-2.1.3.min.js' %}"></script>
+    <script src="{% static 'blog/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'blog/js/pace.min.js' %}"></script>
+    <script src="{% static 'blog/js/modernizr.custom.js' %}"></script>
+
+    <!--自定义样式-->
+    <style>
+    .film_list {
+    float: left;
+    width: 780px
+    }
+   </style>
+    <style>
+    .film-130{
+    float: left;
+    width: 130px;
+    height:190px
+    }
+   </style>
+
+</head>
+
+<body>
+<div class="container">
+    <header id="site-header">
+        <div class="row">
+            <div class="col-md-4 col-sm-5 col-xs-8">
+                <div class="logo">
+                    <h1><h1><a href="{% url 'blog:index' %}"><b>Flxj</b></a></h1></h1>
+                </div>
+            </div><!-- col-md-4 -->
+            <div class="col-md-8 col-sm-7 col-xs-4">
+                <nav class="main-nav" role="navigation">
+                    <div class="navbar-header">
+                        <button type="button" id="trigger-overlay" class="navbar-toggle">
+                            <span class="ion-navicon"></span>
+                        </button>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="cl-effect-11"><a href="{% url 'blog:index' %}" data-hover="首页">首页</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:book' %}" data-hover="读书">读书</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:film' %}" data-hover="光影">光影</a></li>
+                            <li class="cl-effect-11"><a href="other.html" data-hover="其他">其他</a></li>
+                            <li class="cl-effect-11"><a href="{% url 'blog:about' %}" data-hover="关于">关于</a></li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>
+                <div id="header-search-box">
+                    <a id="search-menu" href="#"><span id="search-icon" class="ion-ios-search-strong"></span></a>
+                    <div id="search-form" class="search-form">
+                        <form role="search" method="get" id="searchform" action="{% url 'haystack_search' %}">
+                            <input type="search" name="q" placeholder="搜索" required>
+                            <button type="submit"><span class="ion-ios-search-strong"></span></button>
+                        </form>
+                    </div>
+                </div>
+            </div><!-- col-md-8 -->
+        </div>
+    </header>
+</div>
+
+<div class="content-body">
+    <div class="container">
+        <div class="row">
+            <main class="col-md-9">
+                {% block main %}
+     {% if error_msg %}
+        <p>{{ error_msg }}</p>
+     {% endif %}
+      <!-- 显示电影列表-->
+      <div class="film_list">
+            <header class="entry-header">
+            {% for film in film_list %}
+                 <div class="film-130">
+                     <div class="film">
+                       <a href="{{ film.get_absolute_url }}"><img src="{{ MEDIA_URL }}{{ film.picture }}" style="width: 120px;" title="{{ film.name }}"></a>
+                   </div>
+                 </div>
+
+            {% empty %}
+               <div class="no-book">暂时啥也没看！</div>
+            {% endfor %}
+        </header>
+      </div>
+
+
+
+    {% comment %}
+    分页导航
+    {% endcomment %}
+    {% if is_paginated %}
+        <div class="pagination">
+            <ul>
+                {% if first %}
+                    <li><a href="?page=1">1</a></li>
+                {% endif %}
+                {% if left %}
+                    {% if left_has_more %}
+                        <li><span>...</span></li>
+                    {% endif %}
+                    {% for i in left %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                {% endif %}
+                <li class="current"><a href="?page={{ page_obj.number }}">{{ page_obj.number }}</a></li>
+                {% if right %}
+                    {% for i in right %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endfor %}
+                    {% if right_has_more %}
+                        <li><span>...</span></li>
+                    {% endif %}
+                {% endif %}
+                {% if last %}
+                    <li><a href="?page={{ paginator.num_pages }}">{{ paginator.num_pages }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+    {% endblock main %}
+  </main>
+        <aside class="col-md-3">
+                {% block toc %}
+                {% endblock toc %}
+                <div class="widget widget-recent-posts">
+                    <h3 class="widget-title">最近观影</h3>
+                    {% get_recent_films as recent_film_list %}
+                    <ul>
+                        {% for film in recent_film_list %}
+                            <li>
+                                <a href="{{ film.get_absolute_url }}">{{ film.name }}</a>
+                            </li>
+                        {% empty %}
+                            最近很懒！
+                        {% endfor %}
+                    </ul>
+                </div>
+               <!--动图-->
+               <!--
+               <div class="pitcture">
+                 <object type="application/x-shockwave-flash" style="outline:none;"
+                                                              data="http://cdn.abowman.com/widgets/fish/fish.swf?"
+                                                              width="300" height="200">
+                                                              <param name="movie" value="http://cdn.abowman.com/widgets/fish/fish.swf?"></param>
+                                                              <param name="AllowScriptAccess" value="always"></param>
+                                                              <param name="wmode" value="opaque"></param>
+                                                              <param name="scale" value="noscale"/>
+                                                              <param name="salign" value="tl"/></object>
+               </div>
+            -->
+                <div class="widget widget-archives">
+                    <h3 class="widget-title">归档</h3>
+                    {% film_archives as date_list %}
+                    <ul>
+                        {% for date in date_list %}
+                            <li>
+                                <a href="{% url 'blog:film' date.year date.month %}">
+                                {{ date.year }} 年 {{ date.month }} 月
+                                </a>
+                            </li>
+                        {% empty %}
+                            暂无归档！
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+<footer id="site-footer">
+
+</footer>
+
+<!-- Mobile Menu -->
+<div class="overlay overlay-hugeinc">
+    <button type="button" class="overlay-close"><span class="ion-ios-close-empty"></span></button>
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="book.html">读书</a></li>
+            <li><a href="film.html">光影</a></li>
+            <li><a href="other.html">其他</a></li>
+            <li><a href="about.html">关于</a></li>
+        </ul>
+    </nav>
+</div>
+
+<script src="{% static 'blog/js/script.js' %}"></script>
+
+</body>
+</html>
