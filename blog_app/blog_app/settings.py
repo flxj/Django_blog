@@ -26,7 +26,7 @@ SECRET_KEY = '&o#-8d9cfabt55gkwsq*wr%v(0n%@b(p7xj46t*eth!_^*u065'
 DEBUG = True
 #DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '.flxj.site']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost ', '39.107.98.197','.flxj.site']
 
 
 # Application definition
