@@ -285,7 +285,7 @@ class BookView(ListView):
     model = Book
     template_name = 'blog/book.html'
     context_object_name = 'book_list'
-    paginate_by = 10
+    paginate_by = 20
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -389,7 +389,7 @@ class FilmView(ListView):
     model = Movie
     template_name = 'blog/film.html'
     context_object_name = 'film_list'
-    paginate_by = 24
+    paginate_by = 36
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
