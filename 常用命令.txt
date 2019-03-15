@@ -1,0 +1,48 @@
+
+####服务器IP
+39.107.98.197
+
+sudo ln -s /etc/nginx/sites-available/flxj.site  /etc/nginx/sites-enabled/flxj.site
+
+cd ~/sites/flxj.site/Django_blog/blog_app
+
+#####nginx 启动与重启
+sudo service nginx start
+sudo service nginx reload
+
+sudo vim /etc/nginx/nginx.conf
+
+######nginx 配置文件
+sudo vim /etc/nginx/sites-available/flxj.site
+
+######
+sudo ln -s /etc/nginx/sites-available/flxj.site /etc/nginx/sites-enabled/flxj.site
+
+######
+cd ~/sites/flxj.site/Django_blog/blog_app
+
+####远程连接服务器--到启动Gunicorn
+cd ~/sites/flxj.site
+
+source env/bin/activate
+
+cd Django_blog/blog_app
+
+gunicorn --bind unix:/tmp/flxj.site.socket blog_app.wsgi:application
+
+
+#######
+sudo vim /var/log/nginx/error.log
+
+########查看nginx,gunicorn进程
+ps -ef | grep nginx
+pstree -ap | grep gunicorn
+#查看端口占用
+lsof -i:xxx
+#杀死进程
+kill -s 9 xxx
+
+#GitHub同步到本地
+git fetch
+git merge
+
